@@ -1,0 +1,7 @@
+<!-- volts/templates/graph.html -->
+{% extends 'base.html' %}
+{% static "volts" as imgprefix %}
+
+{% block content %}
+	<img src="{{imgprefix}}-{{duration}}.png" alt="Voltage-chart">
+{% endblock %}

@@ -1,0 +1,11 @@
+<!-- volts/templates/index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+      <ul>
+{% for g in graphs %}
+        <li>last <a href="/graph/{{ g.duration }}">
+	    {{ g.label }}</a></li>
+{% endfor %}
+      </ul>
+{% endblock %}

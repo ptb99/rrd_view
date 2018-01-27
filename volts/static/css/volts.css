@@ -1,0 +1,21 @@
+.page-header {
+    /* background-color: #ff9400; */
+    background-color: #FCA205;
+    margin-top: 0;
+    padding: 20px 20px 20px 40px;
+}
+
+.page-header h1 {
+    color: #ffffff;
+    font-size: 36pt;
+    text-decoration: none;
+}
+
+body {
+    padding-left: 15px;
+}
+
+.footer {
+    font-family: serif;
+    font-size: 12px;
+}
