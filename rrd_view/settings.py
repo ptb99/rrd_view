@@ -23,8 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '94jp-yq!)e&i)t)noa82h5tul-g_$!+sa$a!ta+we^(9-c-=!e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-DEBUG = False
+DEBUG = True                    # need this to do static files
+
 
 # not a good solution security-wise, but OK for a quick hack
 #ALLOWED_HOSTS = []

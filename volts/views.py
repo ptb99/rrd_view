@@ -15,11 +15,11 @@ class HomePageView(TemplateView):
 
     def get(self, request, **kwargs):
         choices = graph.objects.all()
-        return render(request, 'index.html', {'graphs': choices})
+        return render(request, 'volts/index.html', {'graphs': choices})
 
 
 class AboutPageView(TemplateView):
-    template_name = "about.html"
+    template_name = "volts/about.html"
 
 
 class GraphView(TemplateView):
@@ -31,7 +31,7 @@ class GraphView(TemplateView):
         duration = kwargs['dur']
         img = self.make_graph(duration)
         context = {'duration': duration, 'image': img}
-        return render(request, 'graph.html', context)
+        return render(request, 'volts/graph.html', context)
     
     def make_graph(self, duration):
         graph_name = "volts-{0:s}.png".format(duration)

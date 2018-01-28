@@ -1,0 +1,42 @@
+[
+   {
+      "pk" : 1,
+      "fields" : {
+         "label" : "10 min",
+         "duration" : "10m"
+      },
+      "model" : "volts.graph"
+   },
+   {
+      "model" : "volts.graph",
+      "fields" : {
+         "label" : "hour",
+         "duration" : "1h"
+      },
+      "pk" : 2
+   },
+   {
+      "fields" : {
+         "label" : "8 hours",
+         "duration" : "8h"
+      },
+      "pk" : 3,
+      "model" : "volts.graph"
+   },
+   {
+      "pk" : 4,
+      "fields" : {
+         "duration" : "1d",
+         "label" : "day"
+      },
+      "model" : "volts.graph"
+   },
+   {
+      "model" : "volts.graph",
+      "pk" : 5,
+      "fields" : {
+         "label" : "week",
+         "duration" : "7d"
+      }
+   }
+]
