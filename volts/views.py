@@ -7,7 +7,6 @@ from .models import graph
 
 # move this to another src-file?
 import rrdtool
-import os
 
 
 # Create your views here.
