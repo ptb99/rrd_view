@@ -47,6 +47,9 @@ db.sqlite3
 *.rrd
 */static/volts-*.png
 
+# special rule: ignore the collector.py symlink
+collector/collector.py
+
 # Sphinx documentation
 docs/_build/
 
