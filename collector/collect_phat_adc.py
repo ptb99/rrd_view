@@ -8,7 +8,7 @@ import time
 import system
 import Adafruit_ADS1x15
 
-from .time_series import time_series
+from .time_series import TimeSeries
 
 # Create an ADS1015 ADC (12-bit) instance:
 adc = Adafruit_ADS1x15.ADS1015()
@@ -49,11 +49,11 @@ ADC_CHANNEL = 0
 
 if 'debug' in system.argv:
     DEBUG = True
-: else
+else:
     DEBUG = False
 
 
-ts = time_series("voltage")
+ts = TimeSeries(["voltage"])
 if DEBUG:
     print("\nPress CTRL+C to exit.\n")
 time.sleep(INTERVAL) # short pause after ads1015 class creation recommended(??)
@@ -66,7 +66,7 @@ try:
 
         if DEBUG:
             print("{0:.3f} {1:5d} {2:.6f}".format(t, value, volts));
-        ts.store(t, volts)
+        ts.store(t, [volts])
 
         time.sleep(INTERVAL)
 
