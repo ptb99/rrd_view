@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
-## This reads an ADC value from the Pimoroni Automation pHat
-## (using the AdaFruit library for the ADS1015, which is more flexible 
+## This reads a TMP36 sensor attached to a Pimoroni Automation pHat ADC
+## (using the AdaFruit library for the ADS1015, which is more flexible
 ## than the pimoroni python3-automationhat pkg)
 
 import time
 import sys
 import Adafruit_ADS1x15
-
 from time_series import TimeSeries
+
 
 # Create an ADS1015 ADC (12-bit) instance:
 adc = Adafruit_ADS1x15.ADS1015()
@@ -47,13 +47,20 @@ INTERVAL = 1.0
 ADC_CHANNEL = 0
 
 
+def temp(volt):
+    """Convert analog voltage to temperature in C"""
+    # TMP36 reads 0V at -50C and 2V at +150C
+    return 100*volt - 50
+
+
 if 'debug' in sys.argv:
     DEBUG = True
 else:
     DEBUG = False
 
 
-ts = TimeSeries(["voltage"])
+ts = TimeSeries(["voltage", "temp"])
+
 if DEBUG:
     print("\nPress CTRL+C to exit.\n")
 time.sleep(INTERVAL) # short pause after ads1015 class creation recommended(??)
@@ -61,14 +68,20 @@ time.sleep(INTERVAL) # short pause after ads1015 class creation recommended(??)
 try:
     while True:
         t = time.time()
+
         value = adc.read_adc(ADC_CHANNEL, gain=GAIN, data_rate=DATA_RATE)
         volts = float(value)/MAX_VALUE * GAIN_VOLTAGE / VOLT_DIVIDER
+        temp_C = temp(volts)
+        temp_F = 9*temp_C/5 + 32
 
         if DEBUG:
-            print("{0:.3f} {1:5d} {2:.6f}".format(t, value, volts));
-        ts.store(t, [volts])
+            form = 't={time:.3f} - val= {volt:.3f} V  ==  {temp:.3f} C / {temp_F:.3f} F'
+            print (form.format(time=t, volt=volts, temp=temp_C, temp_F=temp_F))
+        ts.store(t, [volts, temp_F])
 
+        # hang out and do nothing for a second
         time.sleep(INTERVAL)
 
 except KeyboardInterrupt:
-    print ("...exiting...")
+    # normal to exit with ^C
+    pass
