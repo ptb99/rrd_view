@@ -42,7 +42,7 @@ class GraphView(TemplateView):
                             "--lower-limit", "{0:f}".format(gr.lower),
                             "--upper-limit", "{0:f}".format(gr.upper),
                             "--no-legend",
-                            "DEF:volts=voltage.rrd:{0}:AVERAGE".format(selector),
+                            "DEF:volts=temp.rrd:{0}:AVERAGE".format(selector),
                             "LINE3:volts#FF0000")
         #print("DBG: rrdtool returns ", ret)
         if ret:

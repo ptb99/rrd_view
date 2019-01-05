@@ -59,7 +59,7 @@ else:
     DEBUG = False
 
 
-ts = TimeSeries(["voltage", "temp"])
+ts = TimeSeries(["temp"])
 
 if DEBUG:
     print("\nPress CTRL+C to exit.\n")
@@ -77,7 +77,7 @@ try:
         if DEBUG:
             form = 't={time:.3f} - val= {volt:.3f} V  ==  {temp:.3f} C / {temp_F:.3f} F'
             print (form.format(time=t, volt=volts, temp=temp_C, temp_F=temp_F))
-        ts.store(t, [volts, temp_F])
+        ts.store(t, [temp_F])
 
         # hang out and do nothing for a second
         time.sleep(INTERVAL)
