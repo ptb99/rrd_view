@@ -14,15 +14,15 @@ class TimeSeries(object):
     def __init__(self, names):
         """Create the RRD file based on given name"""
         self.names = names
-
-        # This maybe should be customizable, but easier to force 1-sec intvl
-        intvl=1
-
         if len(names) is 0:
             raise RuntimeError("Must provide a list of 1+ names")
 
-        # use the 1st name in list for the RRD file:
-        self.filename = names[0] + ".rrd"
+        # Keep this hard-wired to 1-sec, so that the rollup charts below
+        # come out to sensible values (1-min/5-min/etc)
+        self.intvl=1
+
+        # Hardcode this for simplicity
+        self.filename = "values.rrd"
 
         # we want to preserve any previous data on restarts
         if os.path.exists(self.filename):
@@ -38,8 +38,8 @@ class TimeSeries(object):
               "RRA:AVERAGE:0.5:1800:1440"] # 1mon of 30-min
         )
         rrdtool.create(self.filename,
-                       "--step", str(intvl), 
-                       "--start", "{0:d}".format(int(time.time()-intvl)),
+                       "--step", str(self.intvl), 
+                       "--start", "{0:d}".format(int(time.time()-self.intvl)),
                        "--no-overwrite",
                        *base_args)
 
@@ -59,11 +59,11 @@ if __name__ == '__main__':
     # for a test, plot load avg
     import os
 
-    ts = TimeSeries(["load"])
+    ts = TimeSeries(["load1", "load2", "load3"])
 
     for i in range(60):
         t = time.time()
-        x = os.getloadavg()[0]
+        x = os.getloadavg()
         print("DBG: ", t, x)
-        ts.store(t, [x])
+        ts.store(t, x)
         time.sleep(1)

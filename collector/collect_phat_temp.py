@@ -26,11 +26,15 @@ adc = Adafruit_ADS1x15.ADS1015()
 #  -   8 = +/-0.512V
 #  -  16 = +/-0.256V
 # See table 3 in the ADS1015/ADS1115 datasheet for more info on gain.
-GAIN = 1
-GAIN_VOLTAGE = 4.096
+## Turn this down for better precision on the temp voltage
+GAIN = 16
+GAIN_VOLTAGE = 0.256
 
 # Choose the data rate for the ADC sampling
 DATA_RATE = 128 # def = 1600
+
+## Note that we still read in 1-shot mode with .read_adc() below.  This
+## data_rate should be irrelevant, but perhaps affects an integr intvl.
 
 # max value for 12-bit ADC
 MAX_VALUE = 2047
@@ -59,7 +63,7 @@ else:
     DEBUG = False
 
 
-ts = TimeSeries(["temp"])
+ts = TimeSeries(["volts", "temp"])
 
 if DEBUG:
     print("\nPress CTRL+C to exit.\n")
@@ -77,7 +81,7 @@ try:
         if DEBUG:
             form = 't={time:.3f} - val= {volt:.3f} V  ==  {temp:.3f} C / {temp_F:.3f} F'
             print (form.format(time=t, volt=volts, temp=temp_C, temp_F=temp_F))
-        ts.store(t, [temp_F])
+        ts.store(t, [volts, temp_F])
 
         # hang out and do nothing for a second
         time.sleep(INTERVAL)
