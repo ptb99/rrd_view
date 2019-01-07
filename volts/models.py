@@ -19,3 +19,13 @@ class graph(models.Model):
 
     def __str__(self):
         return self.label
+
+
+class recipe_step(models.Model):
+
+    # schema
+    target = models.FloatField(default=65.0)
+    duration = models.FloatField(default=120.0)
+
+    def __str__(self):
+        return "{0:.1f}:{1:.0f}".format(self.target, self.duration)
