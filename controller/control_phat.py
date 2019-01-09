@@ -5,10 +5,21 @@
 
 import sys
 import time
+import itertools
 import rrdtool
 import RPi.GPIO as GPIO
 
-#from ..volts.models import recipe_step
+
+
+class Recipe(object):
+    """Series of Temperature and Duration steps"""
+    def __init__(self, args):
+        assert(len(args) > 0)
+        self.values = itertools.zip_longest(args[::2], args[1::2])
+
+    def values(self):
+        """Return the iterator to our list of pairs (temp,dur)"""
+        return self.values
 
 
 class Relay(object):
@@ -24,8 +35,8 @@ class Relay(object):
         GPIO.setup(self.RELAY_PIN, GPIO.OUT, initial=0)
 
     def output(self, on_off):
-        # write to GPIO (invert logic, since I used the NC line)
-        GPIO.output(self.RELAY_PIN, 0 if on_off else 1)
+        # write to GPIO
+        GPIO.output(self.RELAY_PIN, 1 if on_off else 0)
 
 
 class Control(object):
@@ -42,22 +53,26 @@ class Control(object):
 
     def run(self):
         """Perdiodically check temp and adjust on/off"""
-        for (dt, target) in self.recipe:
+        for (target, dt) in self.recipe.values():
 
             # Record the start of current recipe step
             self.start = time.time()
-            self.done = self.start + dt
+            # if dt for recipe step is None, then go forever
+            if dt:
+                self.done = self.start + float(dt)
+            else:
+                self.done = None
 
             while True:
                 # maybe check a flag for new recipe we need to update to?
 
-                if self.get_temp() < target:
+                if self.get_temp() < float(target):
                     self.heater(True)
                 else:
                     self.heater(False)
 
                 time.sleep(self.TIME_INTVL)
-                if time.time() > self.done:
+                if self.done and time.time() > self.done:
                     break
 
         # Turn off the heater when the recipe is done
@@ -83,15 +98,15 @@ class Control(object):
 
 if __name__ == '__main__':
 
-    # sample recipe for testing
-    recipe = (120*60, 85.0)
+    if len(sys.argv) < 2:
+        # sample recipe for testing
+        recipe = Recipe([85.0, 60*60])
+    else:
+        recipe = Recipe(sys.argv[1:])
 
-    if len(sys.argv) > 2:
-        recipe = (sys.argv[2], sys.argv[1])
-    if len(sys.argv) == 2:
-        recipe = (recipe[0], sys.argv[1])
+    print ("Running with recipe:")
+    for (temp, dur) in recipe.values():
+        print("  {0:.1f} F for {1:.0f} sec".format(float(temp),float(dur)))
 
-    print ("Running Control with recipe {0:.1f} F for {1:.0f} sec".format(
-        recipe[1], recipe[0]))
-    c = Control([recipe])
+    c = Control(recipe)
     c.run()
