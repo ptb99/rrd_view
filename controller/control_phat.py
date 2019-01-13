@@ -15,11 +15,11 @@ class Recipe(object):
     """Series of Temperature and Duration steps"""
     def __init__(self, args):
         assert(len(args) > 0)
-        self.values = itertools.zip_longest(args[::2], args[1::2])
+        self.vals = itertools.zip_longest(args[::2], args[1::2])
 
     def values(self):
         """Return the iterator to our list of pairs (temp,dur)"""
-        return self.values
+        return self.vals
 
 
 class Relay(object):
@@ -104,9 +104,10 @@ if __name__ == '__main__':
     else:
         recipe = Recipe(sys.argv[1:])
 
-    print ("Running with recipe:")
-    for (temp, dur) in recipe.values():
-        print("  {0:.1f} F for {1:.0f} sec".format(float(temp),float(dur)))
+    ## recipe.values() iterator is a 1-pass - need to fix this
+    # print ("Running with recipe:")
+    # for (temp, dur) in recipe.values():
+    #     print("  {0:.1f} F for {1:.0f} sec".format(float(temp),float(dur)))
 
     c = Control(recipe)
     c.run()

@@ -1,0 +1,14 @@
+<!-- volts/templates/recipe.html -->
+{% extends 'volts/base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+    <h2>Temperature Recipe:</h2>
+    <form method="POST" class="post-form">
+      {% csrf_token %}
+      <table>
+        {{ formset }}
+      </table>
+      <button type="submit" class="save btn btn-default">Save</button>
+    </form>
+{% endblock %}

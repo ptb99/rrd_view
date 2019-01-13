@@ -2,8 +2,9 @@
 
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import TemplateView
+from django.forms import modelformset_factory
 
-from .models import graph
+from .models import graph,recipe_step
 
 # move this to another src-file?
 import rrdtool
@@ -49,3 +50,19 @@ class GraphView(TemplateView):
             return graph_name
         else:
             return None
+
+
+def recipe(request):
+    """Handle form for setting up a Temp recipe"""
+    RecipeFormSet = modelformset_factory(recipe_step,
+                                         fields=('target','duration'),
+                                         extra=0)
+    if request.method == "POST":
+        formset = RecipeFormSet(request.POST)
+        if formset.is_valid():
+            formset.save()
+
+    else:
+        formset = RecipeFormSet(queryset=recipe_step.objects.order_by('-id'))
+
+    return render(request, 'volts/recipe.html', {'formset': formset})
