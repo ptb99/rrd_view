@@ -9,6 +9,8 @@ from .models import graph,recipe_step
 # move this to another src-file?
 import rrdtool
 
+import subprocess
+
 
 # Create your views here.
 class HomePageView(TemplateView):
@@ -52,17 +54,65 @@ class GraphView(TemplateView):
             return None
 
 
-def recipe(request):
+class RecipeView(TemplateView):
     """Handle form for setting up a Temp recipe"""
+    template_name = 'volts/recipe.html'
     RecipeFormSet = modelformset_factory(recipe_step,
                                          fields=('target','duration'),
                                          extra=0)
-    if request.method == "POST":
-        formset = RecipeFormSet(request.POST)
+
+    def get(self, request, **kwargs):
+        params = request.GET
+
+        if 'start' in params:
+            self.run_recipe()
+            # set info message pane?
+
+        if 'add' in params:
+            val = params['add']
+            self.add_steps(int(val))
+
+        # both cases fall through to return the regular form (updated)
+        formset = self.RecipeFormSet(queryset=recipe_step.objects.order_by('id'))
+        return render(request, self.template_name, {'formset': formset})
+
+    def post(self, request, **kwargs):
+        # does this need a queryset too?
+        formset = self.RecipeFormSet(request.POST)
         if formset.is_valid():
             formset.save()
+        return render(request, self.template_name, {'formset': formset})
 
-    else:
-        formset = RecipeFormSet(queryset=recipe_step.objects.order_by('-id'))
+    def add_steps(self, value):
+        """Increase or decrease number of steps in model"""
+        if value > 0:
+            while value > 0:
+                recipe_step.objects.create()
+                value = value - 1
+        else:
+            count = recipe_step.objects.count()
+            if count + value < 1:
+                # should prob throw exception here
+                print ("BAD value for add param:", value)
+                return
+            while value < 0:
+                recipe_step.objects.last().delete()
+                value = value + 1
+        return
 
-    return render(request, 'volts/recipe.html', {'formset': formset})
+    def run_recipe(self):
+        """Exec the current recipe"""
+        args = ["./controller/controller.py"]
+        for r in recipe_step.objects.order_by('id'):
+            args.append(str(r.target))
+            # convert hrs to secs
+            dur = r.duration * 3600
+            # flag 0 as meaning "forever" (i.e. stop processing args)
+            if dur == 0.0:
+                break
+            else:
+                args.append(str(dur))
+
+        print ('DBG: to exec:', args)
+        # runs in the bg; could also use this to kill a prior instance??
+        self.controller = subprocess.Popen(args)

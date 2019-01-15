@@ -11,3 +11,15 @@
     font-family: serif;
     font-size: 12px;
 }
+
+.table-striped {
+    width: 70%;
+}
+
+.button-bar {
+    width: 70%;
+}
+
+.btn-right {
+    float: right;
+}

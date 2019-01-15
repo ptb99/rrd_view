@@ -4,11 +4,34 @@
 
 {% block content %}
     <h2>Temperature Recipe:</h2>
-    <form method="POST" class="post-form">
+    <form method="POST">
       {% csrf_token %}
-      <table>
-        {{ formset }}
+      {{ formset.management_form }}
+
+      <table class="table table-striped">
+      {% for form in formset %}
+	 <tr>
+	 {% for field in form.visible_fields %}
+	    <td> {{ field.label_tag }} &nbsp; {{ field }} </td>
+	 {% endfor %}
+	 {% for field in form.hidden_fields %}
+	    {{ field }}
+	 {% endfor %}
+	 </tr>
+      {% endfor %}
       </table>
-      <button type="submit" class="save btn btn-default">Save</button>
+
+      <div class="form-group button-bar">
+	<button type="submit" class="btn btn-primary">Save</button>
+	<a class="btn btn-danger" href="?start=1" role="button">Start</a>
+
+	<a class="btn btn-default btn-right" href="?add=1" role="button">
+	  <span class="glyphicon glyphicon-plus"></span>
+	</a>
+	<a class="btn btn-default btn-right" href="?add=-1" role="button">
+	  <span class="glyphicon glyphicon-minus"></span>
+	</a>
+      </div>
+
     </form>
 {% endblock %}

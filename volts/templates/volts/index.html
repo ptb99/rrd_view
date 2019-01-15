@@ -2,10 +2,15 @@
 {% extends 'volts/base.html' %}
 
 {% block content %}
+      <h3>Graphs:</h3>
       <ul>
 {% for g in graphs %}
         <li>last <a href="{% url 'graph' g.id %}">
 	    {{ g.label }}</a></li>
 {% endfor %}
       </ul>
+
+      <h3>
+	Control <a href="{% url 'recipe' %}">Recipe</a>
+      </h3>
 {% endblock %}
