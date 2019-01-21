@@ -12,7 +12,7 @@ class graph(models.Model):
     lower = models.FloatField(default=0.0)
 
     axis_label = models.CharField(default='Volts', max_length=128)
-    value_field = models.CharField(default='voltage', max_length=128)
+    value_field = models.CharField(default='volts', max_length=128)
 
     def publish(self):
         self.save()
@@ -29,3 +29,16 @@ class recipe_step(models.Model):
 
     def __str__(self):
         return "{0:.1f}:{1:.0f}".format(self.target, self.duration)
+
+
+class labels(models.Model):
+
+    # schema
+    title = models.CharField(default='Voltage Graphs', max_length=128)
+    banner = models.CharField(default='Raspberry Pi Voltage Grapher',
+                              max_length=128)
+    control = models.CharField(default='Temperature Recipe', max_length=128)
+    color = models.CharField(default='#FCA205', max_length=16)
+
+    def __str__(self):
+        return str(self.pk)

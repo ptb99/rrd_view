@@ -3,7 +3,7 @@
 {% load staticfiles %}
 
 {% block content %}
-    <h2>Temperature Recipe:</h2>
+    <h2>{{ labels.control }}:</h2>
     <form method="POST">
       {% csrf_token %}
       {{ formset.management_form }}

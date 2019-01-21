@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.generic import TemplateView
 from django.forms import modelformset_factory
 
-from .models import graph,recipe_step
+from .models import graph,recipe_step,labels
 
 # move this to another src-file?
 import rrdtool
@@ -17,11 +17,18 @@ class HomePageView(TemplateView):
 
     def get(self, request, **kwargs):
         choices = graph.objects.all()
-        return render(request, 'volts/index.html', {'graphs': choices})
+        l = labels.objects.first()
+        return render(request, 'volts/index.html',
+                      {'graphs': choices, 'labels': l})
 
 
 class AboutPageView(TemplateView):
     template_name = "volts/about.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(AboutPageView, self).get_context_data(**kwargs)
+        context['labels'] = labels.objects.first()
+        return context
 
 
 class GraphView(TemplateView):
@@ -29,7 +36,8 @@ class GraphView(TemplateView):
     def get(self, request, **kwargs):
         gr = get_object_or_404(graph, pk=kwargs['graph_id'])
         img = self.make_graph(gr)
-        context = {'duration': gr.duration, 'image': img}
+        l = labels.objects.first()
+        context = {'duration': gr.duration, 'image': img, 'labels': l}
         return render(request, 'volts/graph.html', context)
     
     def make_graph(self, gr):
@@ -74,14 +82,18 @@ class RecipeView(TemplateView):
 
         # both cases fall through to return the regular form (updated)
         formset = self.RecipeFormSet(queryset=recipe_step.objects.order_by('id'))
-        return render(request, self.template_name, {'formset': formset})
+        l = labels.objects.first()
+        return render(request, self.template_name,
+                      {'formset': formset, 'labels': l})
 
     def post(self, request, **kwargs):
         # does this need a queryset too?
         formset = self.RecipeFormSet(request.POST)
         if formset.is_valid():
             formset.save()
-        return render(request, self.template_name, {'formset': formset})
+        l = labels.objects.first()
+        return render(request, self.template_name,
+                      {'formset': formset, 'labels': l})
 
     def add_steps(self, value):
         """Increase or decrease number of steps in model"""

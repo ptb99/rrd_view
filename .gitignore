@@ -47,8 +47,12 @@ db.sqlite3
 *.rrd
 */static/volts-*.png
 
-# special rule: ignore the collector.py symlink
+# special rule: ignore the collector.py/controller.py symlinks
 collector/collector.py
+controller/controller.py
+
+# private helper script to run rsync:
+push_files.sh
 
 # Sphinx documentation
 docs/_build/
