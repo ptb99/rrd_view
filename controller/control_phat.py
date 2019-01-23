@@ -6,6 +6,8 @@
 import sys
 import time
 import itertools
+import logging
+
 import rrdtool
 import RPi.GPIO as GPIO
 
@@ -81,7 +83,7 @@ class Control(object):
 
     def heater(self, state):
         """Turn relay (heater) on or off"""
-        print ("DBG: Control.heater(): GPIO set to ", state)
+        logging.debug ("Control.heater(): GPIO set to %s", state)
         self.relay.output(state)
 
 
@@ -91,12 +93,15 @@ class Control(object):
         # maybe should use .fetch() to get a 5-min avg?
         temp = vals['ds']['temp']
 
-        print ("DBG: Controller.get_temp():", vals['date'], temp)
+        logging.debug ("Controller.get_temp(): %s %s", vals['date'], temp)
 
         return temp
 
 
 if __name__ == '__main__':
+
+    # Should this be in /var/log?  And maybe use TimeRollerThingey?
+    logging.basicConfig(level=logging.INFO, filename='controller.log')
 
     if len(sys.argv) < 2:
         # sample recipe for testing
@@ -104,9 +109,9 @@ if __name__ == '__main__':
     else:
         recipe = Recipe(sys.argv[1:])
 
-    print ("Running with recipe:")
+    logging.info("Running with recipe:")
     for (temp, dur) in recipe.values():
-        print("  {0:.1f} F for {1:.0f} sec".format(float(temp),float(dur)))
+        logging.info("  =  %.1f F for %.0f sec", float(temp), float(dur))
 
     c = Control(recipe)
     c.run()

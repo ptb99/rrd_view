@@ -10,16 +10,18 @@ from .models import graph,recipe_step,labels
 import rrdtool
 
 import subprocess
+import logging
 
 
 # Create your views here.
 class HomePageView(TemplateView):
+    template_name = 'volts/index.html'
 
-    def get(self, request, **kwargs):
-        choices = graph.objects.all()
-        l = labels.objects.first()
-        return render(request, 'volts/index.html',
-                      {'graphs': choices, 'labels': l})
+    def get_context_data(self, **kwargs):
+        context = super(HomePageView, self).get_context_data(**kwargs)
+        context['labels'] = labels.objects.first()
+        context['graphs'] = graph.objects.all()
+        return context
 
 
 class AboutPageView(TemplateView):
@@ -32,13 +34,16 @@ class AboutPageView(TemplateView):
 
 
 class GraphView(TemplateView):
+    template_name = "volts/graph.html"
+    logger = logging.getLogger(__name__)
 
-    def get(self, request, **kwargs):
+    def get_context_data(self, **kwargs):
+        context = super(GraphView, self).get_context_data(**kwargs)
+        context['labels'] = labels.objects.first()
         gr = get_object_or_404(graph, pk=kwargs['graph_id'])
-        img = self.make_graph(gr)
-        l = labels.objects.first()
-        context = {'duration': gr.duration, 'image': img, 'labels': l}
-        return render(request, 'volts/graph.html', context)
+        context['duration'] = gr.duration
+        context['image'] = self.make_graph(gr)
+        return context
     
     def make_graph(self, gr):
         graph_name = "volts-{0:s}.png".format(gr.duration)
@@ -55,7 +60,7 @@ class GraphView(TemplateView):
                             "--no-legend",
                             "DEF:volts=values.rrd:{0}:AVERAGE".format(selector),
                             "LINE3:volts#FF0000")
-        #print("DBG: rrdtool returns ", ret)
+        self.logger.debug("rrdtool returns {}".format(ret))
         if ret:
             return graph_name
         else:
@@ -68,6 +73,7 @@ class RecipeView(TemplateView):
     RecipeFormSet = modelformset_factory(recipe_step,
                                          fields=('target','duration'),
                                          extra=0)
+    logger = logging.getLogger(__name__)
 
     def get(self, request, **kwargs):
         params = request.GET
@@ -105,7 +111,7 @@ class RecipeView(TemplateView):
             count = recipe_step.objects.count()
             if count + value < 1:
                 # should prob throw exception here
-                print ("BAD value for add param:", value)
+                self.logger.warning ("BAD value for add: {}".format(value))
                 return
             while value < 0:
                 recipe_step.objects.last().delete()
@@ -125,6 +131,6 @@ class RecipeView(TemplateView):
             else:
                 args.append(str(dur))
 
-        print ('DBG: to exec:', args)
+        self.logger.debug('to exec: {}'.format(str(args)))
         # runs in the bg; could also use this to kill a prior instance??
         self.controller = subprocess.Popen(args)

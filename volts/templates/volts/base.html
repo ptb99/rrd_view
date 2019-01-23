@@ -15,6 +15,16 @@
     <!-- Booststrap JS
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     -->
+    {% if labels.color != "" %}
+    <!-- override to allow tweaking the color -->
+    <style type="text/css">
+        .jumbotron {
+            background-color: {{ labels.color }};
+        }
+    </style>
+    {% endif %}
+    <link rel="icon" type="image/png"
+	  href="{% static 'favicon.png' %}">
   </head>
 
   <body>
