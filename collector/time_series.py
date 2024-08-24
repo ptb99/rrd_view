@@ -14,7 +14,7 @@ class TimeSeries(object):
     def __init__(self, names):
         """Create the RRD file based on given name"""
         self.names = names
-        if len(names) is 0:
+        if len(names) == 0:
             raise RuntimeError("Must provide a list of 1+ names")
 
         # Keep this hard-wired to 1-sec, so that the rollup charts below
