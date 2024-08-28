@@ -89,7 +89,7 @@ class Control(object):
 
     def get_temp(self):
         """Retrieve latest time-averaged temp reading"""
-        vals = rrdtool.lastupdate("values.rrd")
+        vals = rrdtool.lastupdate("data/values.rrd")
         # maybe should use .fetch() to get a 5-min avg?
         temp = vals['ds']['temp']
 

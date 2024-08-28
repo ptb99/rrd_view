@@ -48,7 +48,7 @@ class GraphView(TemplateView):
     def make_graph(self, gr):
         graph_name = "volts-{0:s}.png".format(gr.duration)
         selector = gr.value_field
-        ret = rrdtool.graph("./volts/static/{0:s}".format(graph_name),
+        ret = rrdtool.graph("./data/plot/{0:s}".format(graph_name),
                             "--start", "end-{0:s}".format(gr.duration),
                             "--end",  "now",
                             "--width", "1024", "--height", "300",
@@ -58,7 +58,7 @@ class GraphView(TemplateView):
                             "--lower-limit", "{0:f}".format(gr.lower),
                             "--upper-limit", "{0:f}".format(gr.upper),
                             "--no-legend",
-                            "DEF:volts=values.rrd:{0}:AVERAGE".format(selector),
+                            "DEF:volts=data/values.rrd:{0}:AVERAGE".format(selector),
                             "LINE3:volts#FF0000")
         self.logger.debug("rrdtool returns {}".format(ret))
         if ret:

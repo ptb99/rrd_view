@@ -22,7 +22,7 @@ class TimeSeries(object):
         self.intvl=1
 
         # Hardcode this for simplicity
-        self.filename = "values.rrd"
+        self.filename = "./data/values.rrd"
 
         # we want to preserve any previous data on restarts
         if os.path.exists(self.filename):

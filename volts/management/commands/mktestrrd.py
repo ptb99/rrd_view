@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # params
-        filename = "values.rrd"
+        filename = "./data/values.rrd"
         base = 12.0
         amplitude = 0.5
         num_secs = 2 * 3600     # 2 hrs
